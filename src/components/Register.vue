@@ -1,40 +1,97 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-    <div>
-      <h2>Registro de usuario</h2>
-      <form @submit.prevent="registerUser">
-        <div class="form-group">
-          <label for="email">Correo electrónico:</label>
-          <input type="email" class="form-control" id="email" v-model="email" v-validate="'required|email'" :class="{ 'is-invalid': errors.has('email') }">
-          <span class="invalid-feedback" v-if="errors.has('email')">{{ errors.first('email') }}</span>
-        </div>
-        <div class="form-group">
-          <label for="password">Contraseña:</label>
-          <input type="password" class="form-control" id="password" v-model="password" v-validate="'required|min:6'" :class="{ 'is-invalid': errors.has('password') }">
-          <span class="invalid-feedback" v-if="errors.has('password')">{{ errors.first('password') }}</span>
-        </div>
-        <button type="submit" class="btn btn-primary">Registrarse</button>
-      </form>
-    </div>
-  </template>
-  
-  <script>
-  export default {
-    data() {
-      return {
-        email: '',
-        password: ''
-      };
+  <div class="container">
+    <h2>Registro de usuario</h2>
+    <form @submit.prevent="registro" class="mb-3">
+      <div class="mb-3">
+        <label for="registroNombre" class="form-label">Nombre:</label>
+        <input v-model="nombre" type="text" class="form-control" id="registroNombre" required>
+      </div>
+      <div class="mb-3">
+        <label for="registroApellido" class="form-label">Apellido:</label>
+        <input v-model="apellido" type="text" class="form-control" id="registroApellido" required>
+      </div>
+      <div class="mb-3">
+        <label for="registroEmail" class="form-label">Email:</label>
+        <input v-model="email" type="email" class="form-control" id="registroEmail" required>
+      </div>
+      <div class="mb-3">
+        <label for="registroPassword" class="form-label">Contraseña:</label>
+        <input v-model="password" type="password" class="form-control" id="registroPassword" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Registrarse</button>
+    </form>
+    <p v-if="registroExitoso" class="text-success">Registro exitoso. ¡Bienvenido, {{ nombre }} {{ apellido }}!</p>
+    <p v-if="registroError" class="text-danger">{{ registroErrorMessage }}</p>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'RegisterForm',
+  data() {
+    return {
+      nombre: '',
+      apellido: '',
+      email: '',
+      password: '',
+      registroExitoso: false,
+      registroError: false,
+      registroErrorMessage: '',
+    };
+  },
+  methods: {
+    registro() {
+      fetch('https://64a246f4b45881cc0ae4f33d.mockapi.io/api/v1/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nombre: this.nombre,
+          apellido: this.apellido,
+          email: this.email,
+          password: this.password,
+        }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.id) {
+            this.registroExitoso = true;
+            this.registroError = false;
+            setTimeout(() => {
+              this.registroExitoso = false;
+              this.cerrarVentana();
+            }, 3000);
+            console.log('Usuario registrado:', data);
+            this.nombre = '';
+            this.apellido = '';
+            this.email = '';
+            this.password = '';
+          } else {
+            this.registroExitoso = false;
+            this.registroError = true;
+            this.registroErrorMessage = 'Error al registrar el usuario. Por favor, inténtelo de nuevo.';
+          }
+        })
+        .catch(error => {
+          console.error('Error al registrar el usuario:', error);
+          this.registroExitoso = false;
+          this.registroError = true;
+          this.registroErrorMessage = 'Error al registrar el usuario. Por favor, inténtelo de nuevo.';
+        });
     },
-    methods: {
-      registerUser() {
-        if (!this.errors.any()) {
-          // Aquí puedes implementar la lógica de registro de usuario utilizando Firebase Authentication o cualquier otro servicio
-          console.log('Registro exitoso');
-        }
-      }
-    }
-  };
-  </script>
-  
-  
+    cerrarVentana() {
+      this.$emit('close');
+    },
+  },
+};
+</script>
+
+<style scoped>
+.container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding-top: 50px;
+}
+</style>

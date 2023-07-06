@@ -1,5 +1,25 @@
 <template>
   <div class="app">
+    <HeaderBar />
+    <router-view></router-view>
+    <div class="container">
+    <div class="d-flex justify-content-end">
+    <button class="btn btn-primary mr-2" @click="openLoginModal">Inicio Sesion</button>
+    <button class="btn btn-primary" @click="openRegistroModal">Registro</button>
+  </div>
+  </div>
+    <div id="loginModal" class="modal">
+      <div class="modal-content">
+        <span class="close" @click="closeLoginModal">&times;</span>
+        <Login></Login>
+      </div>
+    </div>
+    <div id="registroModal" class="modal">
+      <div class="modal-content">
+        <span class="close" @click="closeRegistroModal">&times;</span>
+        <Register></Register>
+      </div>
+    </div>
     <h2>Productos disponibles</h2>
     <div class="product-list row">
       <div class="col-md-4" v-for="product in products" :key="product.id">
@@ -14,11 +34,12 @@
         </div>
       </div>
     </div>
-
     <h2>Carrito de compras</h2>
     <cart :cart-items="cartItems" @remove-from-cart="removeFromCart" />
 
-    <button @click="showConfirmation = true" v-if="!showConfirmation" class="btn btn-success confirm-button">Confirmar compra</button>
+    <p v-if="hasItemsInCart()" class="cart-summary">Total: $ {{ totalPrice }} ({{ cartItems.length }} unidades)</p>
+
+    <button @click="showConfirmation = true" v-if="!showConfirmation" class="btn btn-success confirm-button" :disabled="!hasItemsInCart()">Confirmar compra</button>
 
     <div v-if="showConfirmation" class="confirmation-form">
       <h3>Confirmar compra</h3>
@@ -49,18 +70,13 @@
         {{ errorMessages.join(', ') }}
       </p>
     </div>
-
-    <div class="register-section">
-      <register></register>
-    </div>
-
-    <div class="login-section">
-      <login></login>
-    </div>
   </div>
 </template>
 
 <script>
+
+import Swal from 'sweetalert2';
+import HeaderBar from './components/HeaderBar.vue';
 import Cart from './components/Cart.vue';
 import Register from './components/Register.vue';
 import Login from './components/Login.vue';
@@ -68,10 +84,12 @@ import Login from './components/Login.vue';
 export default {
   name: 'App',
   components: {
+    HeaderBar,
     Cart,
     Register,
     Login,
   },
+  
   data() {
     return {
       products: [
@@ -92,7 +110,28 @@ export default {
       errorMessages: []
     };
   },
+  computed: {
+    totalPrice() {
+      return this.cartItems.reduce((total, item) => total + item.price, 0);
+    },
+  },
   methods: {
+    openLoginModal() {
+      const modal = document.getElementById('loginModal');
+      modal.style.display = 'block';
+    },
+    closeLoginModal() {
+      const modal = document.getElementById('loginModal');
+      modal.style.display = 'none';
+    },
+    openRegistroModal() {
+      const modal = document.getElementById('registroModal');
+      modal.style.display = 'block';
+    },
+    closeRegistroModal() {
+      const modal = document.getElementById('registroModal');
+      modal.style.display = 'none';
+    },
     addToCart(product) {
       this.cartItems.push(product);
     },
@@ -100,32 +139,35 @@ export default {
       this.cartItems.splice(index, 1);
     },
     confirmPurchase() {
-      const creditCardRegex = /^\d{16}$/; // Expresión regular para validar 16 dígitos
-      const securityCodeRegex = /^\d{3,4}$/; // Expresión regular para validar 3 o 4 dígitos
-      const nameRegex = /^[a-zA-Z\s]+$/; // Expresión regular para validar solo letras y espacios
-      const expirationDateRegex = /^(0[1-9]|1[0-2])\/(2[3-9]|3[0-9])$/; // Expresión regular para validar formato MM/YY
+  const creditCardRegex = /^\d{16}$/; // Expresión regular para validar 16 dígitos
+  const securityCodeRegex = /^\d{3,4}$/; // Expresión regular para validar 3 o 4 dígitos
+  const nameRegex = /^[a-zA-Z\s]+$/; // Expresión regular para validar solo letras y espacios
+  const expirationDateRegex = /^(0[1-9]|1[0-2])\/(2[3-9]|3[0-9])$/; // Expresión regular para validar formato MM/YY
 
-      this.errorMessages = [];
+  if (!this.customerName || !nameRegex.test(this.customerName)) {
+    Swal.fire('Error', 'El campo Nombre y apellido es inválido', 'error');
+    return;
+  }
 
-      if (!this.customerName || !nameRegex.test(this.customerName)) {
-        this.errorMessages.push('El campo Nombre y apellido es inválido');
-      }
+  if (!this.email || !/\S+@\S+\.\S+/.test(this.email)) {
+    Swal.fire('Error', 'El campo Correo electrónico es inválido', 'error');
+    return;
+  }
 
-      if (!this.email || !/\S+@\S+\.\S+/.test(this.email)) {
-        this.errorMessages.push('El campo Correo electrónico es inválido');
-      }
+  if (!this.creditCardNumber || !creditCardRegex.test(this.creditCardNumber)) {
+    Swal.fire('Error', 'El campo Número de tarjeta de crédito es inválido', 'error');
+    return;
+  }
 
-      if (!this.creditCardNumber || !creditCardRegex.test(this.creditCardNumber)) {
-        this.errorMessages.push('El campo Número de tarjeta de crédito es inválido');
-      }
+  if (!this.securityCode || !securityCodeRegex.test(this.securityCode)) {
+    Swal.fire('Error', 'El campo Código de seguridad es inválido', 'error');
+    return;
+  }
 
-      if (!this.securityCode || !securityCodeRegex.test(this.securityCode)) {
-        this.errorMessages.push('El campo Código de seguridad es inválido');
-      }
-
-      if (!this.expirationDate || !expirationDateRegex.test(this.expirationDate)) {
-        this.errorMessages.push('El campo Vencimiento es inválido');
-      }
+  if (!this.expirationDate || !expirationDateRegex.test(this.expirationDate)) {
+    Swal.fire('Error', 'El campo Vencimiento es inválido', 'error');
+    return;
+  }
 
       if (this.errorMessages.length === 0) {
         const currentDate = new Date();
@@ -133,7 +175,14 @@ export default {
         const expirationYear = 2000 + parseInt(this.expirationDate.substring(3, 5), 10);
 
         if (expirationYear > currentDate.getFullYear() || (expirationYear === currentDate.getFullYear() && expirationMonth >= currentDate.getMonth() + 1)) {
-          alert('¡Compra confirmada!');
+          const orderNumber = Math.floor(Math.random() * 1000000); // Generar número de orden aleatorio
+
+          Swal.fire({
+            title: '¡Compra confirmada!',
+            html: `Gracias por tu compra. Te estaremos enviando la información de tu compra a: ${this.email}<br>Número de orden: ${orderNumber}`,
+            icon: 'success'
+          });
+
           this.clearFields();
         } else {
           this.errorMessages.push('La fecha de vencimiento debe ser posterior a la fecha actual');
@@ -149,62 +198,108 @@ export default {
       this.errorMessages = [];
       this.cartItems = [];
       this.showConfirmation = false;
+    },
+    hasItemsInCart() {
+      return this.cartItems.length > 0;
     }
   }
 };
 </script>
 
 <style scoped>
-h2 {
-  margin: 20px 0;
+
+.app {
+  background-image: url('https://www.futuremusic-es.com/wp-content/uploads/2016/03/HD_Vinyl_intro_750x400px.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.product-list {
+  margin-top: 20px;
+}
+
+.card {
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  background-color: #f9f9f9;
+}
+
+.card-img-top {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.card-text {
+  margin-bottom: 10px;
+}
+
+.card-price {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.cart-summary {
+  font-weight: bold;
+  margin-top: 20px;
 }
 
 .confirm-button {
-  margin-top: 10px;
-}
-
-.error-message {
-  color: red;
+  margin-top: 20px;
 }
 
 .confirmation-form {
   margin-top: 20px;
 }
 
-.card {
-  margin-bottom: 20px;
-}
-
-.card-img-top {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-}
-
-.card-body {
-  text-align: center;
-}
-
-.card-title {
-  font-size: 20px;
-  font-weight: bold;
+.error-message {
+  color: red;
   margin-top: 10px;
-}
-
-.card-price {
-  font-size: 18px;
-  margin-bottom: 10px;
-}
-
-.register-section {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-}
-
-.login-section {
-  position: absolute;
-  top: 60px;
-  right: 10px;
 }
 </style>

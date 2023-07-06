@@ -1,11 +1,27 @@
 <template>
   <div class="cart">
-    <ul>
-      <li v-for="(item, index) in cartItems" :key="index">
-        {{ item.name }} - ${{ item.price }}
-        <button @click="removeFromCart(index)" class="remove-button">Eliminar</button>
-      </li>
-    </ul>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nombre del producto</th>
+          <th>Cantidad</th>
+          <th>Precio</th>
+          <th>Subtotal</th>
+          <th>Eliminar</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(item, index) in cartItemsSummary" :key="index">
+          <td>{{ item.product.name }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>{{ item.product.price }}</td>
+          <td>{{ item.quantity * item.product.price }}</td>
+          <td>
+            <button @click="removeFromCart(item.product.id)" class="remove-button">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
@@ -13,26 +29,44 @@
 export default {
   name: 'ShoppingCart',
   props: ['cartItems'],
+  computed: {
+    cartItemsSummary() {
+      const summary = {};
+      this.cartItems.forEach((item) => {
+        const key = `${item.id}-${item.name}-${item.price}`;
+        if (summary[key]) {
+          summary[key].quantity += 1;
+        } else {
+          summary[key] = {
+            product: item,
+            quantity: 1,
+          };
+        }
+      });
+      return Object.values(summary);
+    },
+  },
   methods: {
-    removeFromCart(index) {
-      this.$emit('remove-from-cart', index);
-    }
-  }
+    removeFromCart(productId) {
+      const index = this.cartItems.findIndex((item) => item.id === productId);
+      if (index !== -1) {
+        this.$emit('remove-from-cart', index);
+      }
+    },
+  },
 };
 </script>
 
 <style scoped>
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
+table {
   margin-bottom: 10px;
   background-color: #f9f9f9;
-  padding: 10px;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+  padding: 10px;
 }
 
 .remove-button {
@@ -52,5 +86,4 @@ li {
 .remove-button:hover {
   background-color: #d32f2f;
 }
-
 </style>
