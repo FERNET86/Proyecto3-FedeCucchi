@@ -1,18 +1,58 @@
 <template>
-    <ul>
-    <li><router-link to="/">Home</router-link></li>
-    <li><router-link :to="{name: 'quienes-somos'}">Quienes somos</router-link></li>
-    <li><router-link :to="{name: 'post-id', params: {id: 1} }">Post numero 1</router-link></li>
+    <ul class="header-bar">
+      <p class="auth-button home-link"><router-link to="/">Home</router-link></p>
+      <p v-if="!getIsLogged" class="auth-button myp"><router-link :to="{ name: 'LoginForm' }">Login</router-link></p>
+      <p v-if="!getIsLogged" class="auth-button myp"><router-link :to="{ name: 'RegisterForm' }">Register</router-link></p>
+      <p v-if="getIsLogged" class="auth-button myp"><router-link :to="{ name: 'MyProfile' }">Mi Perfil</router-link></p>
     </ul>
-</template>
+  </template>
 
 <script>
 export default {
     name: "HeaderBar",
+    computed: {
+        getIsLogged() {
+            return this.$store.getters.isLogged;
+        },
+    },
 };
 </script>
 
 <style scoped>
-a {
+.header-bar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.auth-button {
+  margin-left: 10px;
+  padding: 8px 12px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.auth-button:hover {
+  background-color: #e0e0e0;
+}
+
+.auth-button a {
+  text-decoration: none;
+}
+
+.home-link {
+  margin-right: auto;
+  margin-left: 25px;
+}
+
+.myp {
+  margin-right: 25px;
 }
 </style>

@@ -17,15 +17,30 @@ export default new Vuex.Store({
         text: "segundo todo",
       },
     ],
+    isLogged: false,
+    userLogged: {},
   },
-  getters: {},
+  getters: {
+    isLogged: (state) => {
+      return state.isLogged;
+    },
+    userLogged: (state) => {
+      return state.userLogged;
+    }
+  },
   mutations: {
     incrementarCount: (state) => {
       state.count++;
     },
     addTodo: (state, todo) => {
       state.todos.push(todo)
-    }
+    },
+    setIsLogged: (state, value) => {
+      return state.isLogged = value;
+    },
+    setUserLogged: (state, user) => {
+      return state.userLogged = user;
+    },
   },
   actions: {
     incrementarCountAction: (context) => {

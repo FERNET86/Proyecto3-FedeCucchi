@@ -1,13 +1,17 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import HomePage from "./views/HomePage.vue";
-import QuienesSomos from "./views/QuienesSomos.vue";
+import LoginForm from "./views/Login.vue";
+import RegisterForm from "./views/Register.vue";
+import MyProfile from "./views/MyProfile.vue";
 
 Vue.use(VueRouter);
 
 const routes = [
     {path: "/", component: HomePage, name: "home"},
-    {path: "/quienes-somos", component: QuienesSomos, name: "quienes-somos"},
+    {path: "/login", component: LoginForm, name: "LoginForm"},
+    {path: "/register", component: RegisterForm, name: "RegisterForm"},
+    {path: "/myprofile", component: MyProfile, name: "MyProfile"},
 ]
 
 const router = new VueRouter({
