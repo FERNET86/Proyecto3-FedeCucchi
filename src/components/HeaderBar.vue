@@ -1,11 +1,11 @@
 <template>
     <ul class="header-bar">
-      <p class="auth-button home-link"><router-link to="/">Home</router-link></p>
-      <p v-if="!getIsLogged" class="auth-button myp"><router-link :to="{ name: 'LoginForm' }">Login</router-link></p>
-      <p v-if="!getIsLogged" class="auth-button myp"><router-link :to="{ name: 'RegisterForm' }">Register</router-link></p>
-      <p v-if="getIsLogged" class="auth-button myp"><router-link :to="{ name: 'MyProfile' }">Mi Perfil</router-link></p>
+    <p class="auth-button home-link"><router-link to="/">Home</router-link></p>
+    <p v-if="!getIsLogged" class="auth-button myp"><router-link :to="{ name: 'LoginForm' }">Login</router-link></p>
+    <p v-if="!getIsLogged" class="auth-button myp"><router-link :to="{ name: 'RegisterForm' }">Register</router-link></p>
+    <p v-if="getIsLogged" class="auth-button myp"><router-link :to="{ name: 'MyProfile' }">Mi Perfil</router-link></p>
     </ul>
-  </template>
+</template>
 
 <script>
 export default {
@@ -20,23 +20,23 @@ export default {
 
 <style scoped>
 .header-bar {
-  display: flex;
-  justify-content: flex-end;
-  padding: 0;
-  margin: 0;
-  list-style: none;
+display: flex;
+justify-content: flex-end;
+padding: 0;
+margin: 0;
+list-style: none;
 }
 
 .auth-button {
-  margin-left: 10px;
-  padding: 8px 12px;
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  text-decoration: none;
-  color: #333;
-  font-weight: bold;
-  text-transform: uppercase;
+margin-left: 10px;
+padding: 8px 12px;
+background-color: #f0f0f0;
+border: 1px solid #ccc;
+border-radius: 4px;
+text-decoration: none;
+color: #333;
+font-weight: bold;
+text-transform: uppercase;
 }
 
 .auth-button:hover {

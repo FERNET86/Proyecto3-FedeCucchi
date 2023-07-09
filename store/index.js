@@ -5,18 +5,6 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    message: "Hola coders desde Vuex state",
-    count: 0,
-    todos: [
-      {
-        timestamp: 123,
-        text: "primer todo",
-      },
-      {
-        timestamp: 456,
-        text: "segundo todo",
-      },
-    ],
     isLogged: false,
     userLogged: {},
   },

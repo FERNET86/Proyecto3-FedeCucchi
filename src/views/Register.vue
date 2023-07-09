@@ -21,8 +21,9 @@
         </div>
         <button type="submit" class="btn btn-primary">Registrarse</button>
       </form>
-      <p v-if="registroExitoso" class="text-success">Registro exitoso. ¡Bienvenido, {{ nombre }} {{ apellido }}!</p>
+      <p v-if="registroExitoso" class="registrosatisfactorio">Registro exitoso. ¡Bienvenido, {{ nombre }} {{ apellido }}!</p>
       <p v-if="registroError" class="text-danger">{{ registroErrorMessage }}</p>
+        <p class="pie"> </p>
     </div>
   </template>
   
@@ -59,10 +60,6 @@
             if (data.id) {
               this.registroExitoso = true;
               this.registroError = false;
-              setTimeout(() => {
-                this.registroExitoso = false;
-                this.cerrarVentana();
-              }, 3000);
               console.log('Usuario registrado:', data);
               this.nombre = '';
               this.apellido = '';
@@ -81,18 +78,27 @@
             this.registroErrorMessage = 'Error al registrar el usuario. Por favor, inténtelo de nuevo.';
           });
       },
-      cerrarVentana() {
-        this.$emit('close');
-      },
     },
   };
   </script>
   
   <style scoped>
+
   .container {
     max-width: 400px;
     margin: 0 auto;
     padding-top: 50px;
   }
+  .registrosatisfactorio{
+    font-size: xx-large;
+    font-style: unset;
+    color: black;
+    font-weight: bold;
+  }
+
+  .pie{
+    height: 110px; 
+  }
   </style>
+
   

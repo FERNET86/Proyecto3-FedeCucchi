@@ -15,6 +15,7 @@
       </form>
       <p v-if="loginExitoso" class="text-success">¡Inicio de sesión exitoso!</p>
       <p v-if="loginError" class="text-danger">{{ loginErrorMessage }}</p>
+      <p class="pie"> </p>
     </div>
   </template>
   
@@ -73,5 +74,10 @@
     margin: 0 auto;
     padding-top: 50px;
   }
+  
+  .pie{
+    height: 280px; 
+  }
+
   </style>
   

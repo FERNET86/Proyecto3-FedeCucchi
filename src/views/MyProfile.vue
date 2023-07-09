@@ -1,6 +1,9 @@
 <template>
+  <div> 
     <ProfileAdmin v-if="getIsAdmin" />
     <ProfileSingle v-else />
+    <p class="pie"> </p>
+  </div>
   </template>
   
   <script>
@@ -45,7 +48,10 @@
   span {
     margin-left: 5px;
   }
-  
-  /* Otros estilos según tus necesidades */
+  .pie{
+    height: 330px; 
+  }
+
   </style>
+
   
